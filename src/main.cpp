@@ -1,6 +1,7 @@
 #include <iostream>
-#include <armadillo>
+#include <algorithm>
 #include <iostream>
+#include <math.h>
 #include <SFML/Graphics.hpp>
 #include <TGUI/TGUI.hpp>
 
@@ -9,26 +10,48 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(500, 500), "Double pendulum");
 	tgui::Gui gui(window);
 	tgui::Button::Ptr button;
-	arma::fvec2 circlePos {250, 250};
 	sf::CircleShape shape(200.f);
 	shape.setPointCount(300);
 	shape.setOrigin(shape.getRadius(), shape.getRadius());
-	shape.setPosition(circlePos[0], circlePos[1]);
 
-	double angle1 = 90;
-	double angle2 = 45;
+	double angle1 = 90.f;
+	double angle2 = 45.f;
 	double angle1_acc = 0;
 	double angle2_acc = 0;
 	double angle1_vel = 0;
 	double angle2_vel = 0;
-	double length1 = 0.1;
+	double length1 = 0.15;
 	double length2 = 0.1;
-	double mass1 = 0.1;
-	double mass2 = 0.1;
+	double maxMass = 1;
+	double mass1 = 1;
+	double mass1Percent = mass1/maxMass;
+	double mass2 = 0.2;
+	double mass2Percent = mass2/maxMass;
 	double g = 9.81;
 	double scale = 1000;
 	double timeScale = 1.0/5;
-	sf::Vector2f startPos(250, 200);
+	float lineThickness = 5;
+	sf::Vector2f startPos(250, 100);
+	sf::RectangleShape firstLine (sf::Vector2f(lineThickness, length1*scale));
+	firstLine.setOrigin(lineThickness / 2., 0);
+	firstLine.setPosition(startPos.x, startPos.y);
+	firstLine.setFillColor(sf::Color::Black);
+	
+	sf::RectangleShape secondLine (sf::Vector2f(lineThickness, length2*scale));
+	secondLine.setOrigin(lineThickness / 2., 0);
+	secondLine.setFillColor(sf::Color::Black);
+	
+	sf::CircleShape weight1(std::max(10., mass1/maxMass * 15.));
+	sf::Color weigth1Color(100*mass1Percent, 255 * (1-mass1Percent), 255 * (1-mass1Percent));
+	weight1.setFillColor(weigth1Color);
+	weight1.setOrigin(weight1.getRadius(), weight1.getRadius());
+	weight1.setPointCount(100);
+	
+	sf::CircleShape weight2(std::max(10., mass2/maxMass * 50.));
+	sf::Color weigth2Color(100*mass2Percent, 255 * (1-mass2Percent), 255 * (1-mass2Percent));
+	weight2.setFillColor(weigth2Color);
+	weight2.setOrigin(weight2.getRadius(), weight2.getRadius());
+	weight2.setPointCount(100);
 
 	sf::Clock timer;
 	double deltaTime;
@@ -60,16 +83,27 @@ int main()
 		angle2_vel = angle2_vel + deltaTime * angle2_acc;
 		//angle1 = 0;
 		//angle2 = 45.0 / 180.0 * 3.14;
-		window.clear();
-		sf::Vector2f firstPos (startPos.x + length1 * scale * sin(angle1), startPos.y + length1 * scale * cos(angle1));
-		sf::Vector2f secondPos (firstPos.x + length2 * scale * sin(angle2), firstPos.y + length2 * scale * cos(angle2));
-		std::vector<sf::Vertex> line =
-		{
-			sf::Vertex(startPos),
-			sf::Vertex(firstPos),
-			sf::Vertex(secondPos)
-		};
-		window.draw(&line[0], line.size(), sf::LineStrip);
+		window.clear(sf::Color(193, 193, 193));
+		// sf::Vector2f firstPos (startPos.x + length1 * scale * sin(angle1), startPos.y + length1 * scale * cos(angle1));
+		// sf::Vector2f secondPos (firstPos.x + length2 * scale * sin(angle2), firstPos.y + length2 * scale * cos(angle2));
+		// std::vector<sf::Vertex> line =
+		// {
+			// sf::Vertex(startPos),
+			// sf::Vertex(firstPos),
+			// sf::Vertex(secondPos)
+		// };
+		// window.draw(&line[0], line.size(), sf::LineStrip);
+		sf::Vector2f firstEndPos (startPos.x + length1 * scale * sin(angle1), startPos.y + length1 * scale * cos(angle1));
+		sf::Vector2f secondEndPos (firstEndPos.x + length2 * scale * sin(angle2), firstEndPos.y + length2 * scale * cos(angle2));
+		firstLine.setRotation(-angle1/M_PI*180.f);
+		secondLine.setRotation(-angle2/M_PI*180.f);
+		secondLine.setPosition(firstEndPos.x, firstEndPos.y);
+		weight1.setPosition(firstEndPos);
+		weight2.setPosition(secondEndPos);
+		window.draw(firstLine);
+		window.draw(secondLine);
+		window.draw(weight1);
+		window.draw(weight2);
 		window.display();
 	}
 }
