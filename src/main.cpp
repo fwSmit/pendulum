@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <iostream>
 #include <math.h>
+#include <sstream>
+#include <string>
 #include <SFML/Graphics.hpp>
 #include <TGUI/TGUI.hpp>
 
@@ -9,10 +11,11 @@ int main()
 {
 	sf::RenderWindow window(sf::VideoMode(500, 500), "Double pendulum");
 	tgui::Gui gui(window);
-	tgui::Button::Ptr button;
-	sf::CircleShape shape(200.f);
-	shape.setPointCount(300);
-	shape.setOrigin(shape.getRadius(), shape.getRadius());
+	tgui::TextBox::Ptr test = tgui::TextBox::create();
+	test->setPosition(0, 0);
+	test->setSize(100, 50);
+	gui.add(test);
+	
 
 	double angle1 = 90.f;
 	double angle2 = 45.f;
@@ -24,39 +27,77 @@ int main()
 	double length2 = 0.1;
 	double maxMass = 1;
 	double mass1 = 1;
-	double mass1Percent = mass1/maxMass;
 	double mass2 = 0.2;
-	double mass2Percent = mass2/maxMass;
 	double g = 9.81;
 	double scale = 1000;
 	double timeScale = 1.0/5;
+	double maxLenght = 0.2;
+	double minLenght = 0.02;
 	float lineThickness = 5;
+	
+	tgui::Slider::Ptr massSlider1 = tgui::Slider::create(0.1f, maxMass);
+	massSlider1->setPosition(50, 400);
+	massSlider1->setSize(180, 15);
+	massSlider1->setStep(0.005);
+	gui.add(massSlider1);
+	tgui::Slider::Ptr massSlider2 = tgui::Slider::create(0.01f, maxMass);
+	massSlider2->setPosition(50, 450);
+	massSlider2->setSize(180, 15);
+	massSlider2->setStep(0.005);
+	gui.add(massSlider2);
+	
+	tgui::Slider::Ptr lengthSlider1 = tgui::Slider::create(minLenght, maxLenght);
+	lengthSlider1->setPosition(270, 400);
+	lengthSlider1->setSize(180, 15);
+	lengthSlider1->setStep(0.0005);
+	gui.add(lengthSlider1);
+	tgui::Slider::Ptr lengthSlider2	= tgui::Slider::create(minLenght, maxLenght);
+	lengthSlider2->setPosition(270, 450);
+	lengthSlider2->setSize(180, 15);
+	lengthSlider2->setStep(0.0005);
+	gui.add(lengthSlider2);
+
+	
 	sf::Vector2f startPos(250, 100);
-	sf::RectangleShape firstLine (sf::Vector2f(lineThickness, length1*scale));
-	firstLine.setOrigin(lineThickness / 2., 0);
-	firstLine.setPosition(startPos.x, startPos.y);
-	firstLine.setFillColor(sf::Color::Black);
 	
-	sf::RectangleShape secondLine (sf::Vector2f(lineThickness, length2*scale));
-	secondLine.setOrigin(lineThickness / 2., 0);
-	secondLine.setFillColor(sf::Color::Black);
-	
-	sf::CircleShape weight1(std::max(10., mass1/maxMass * 15.));
-	sf::Color weigth1Color(100*mass1Percent, 255 * (1-mass1Percent), 255 * (1-mass1Percent));
-	weight1.setFillColor(weigth1Color);
-	weight1.setOrigin(weight1.getRadius(), weight1.getRadius());
-	weight1.setPointCount(100);
-	
-	sf::CircleShape weight2(std::max(10., mass2/maxMass * 50.));
-	sf::Color weigth2Color(100*mass2Percent, 255 * (1-mass2Percent), 255 * (1-mass2Percent));
-	weight2.setFillColor(weigth2Color);
-	weight2.setOrigin(weight2.getRadius(), weight2.getRadius());
-	weight2.setPointCount(100);
 
 	sf::Clock timer;
 	double deltaTime;
 	while (window.isOpen())
 	{
+		// masses
+		mass1 = massSlider1->getValue();
+		mass2 = massSlider2->getValue();
+		double mass1Percent = mass1/maxMass;
+		double mass2Percent = mass2/maxMass;
+		sf::CircleShape weight1(std::max(10., mass1/maxMass * 15.));
+		sf::Color weigth1Color(100*mass1Percent, 255 * (1-mass1Percent), 255 * (1-mass1Percent));
+		weight1.setFillColor(weigth1Color);
+		weight1.setOrigin(weight1.getRadius(), weight1.getRadius());
+		weight1.setPointCount(100);
+
+		sf::CircleShape weight2(std::max(10., mass2/maxMass * 15.));
+		sf::Color weigth2Color(100*mass2Percent, 255 * (1-mass2Percent), 255 * (1-mass2Percent));
+		weight2.setFillColor(weigth2Color);
+		weight2.setOrigin(weight2.getRadius(), weight2.getRadius());
+		weight2.setPointCount(100);
+
+		//lenghts
+		length1 = lengthSlider1->getValue();
+		length2 = lengthSlider2->getValue();
+		sf::RectangleShape firstLine (sf::Vector2f(lineThickness, length1*scale));
+		firstLine.setOrigin(lineThickness / 2., 0);
+		firstLine.setPosition(startPos.x, startPos.y);
+		firstLine.setFillColor(sf::Color::Black);
+
+		sf::RectangleShape secondLine (sf::Vector2f(lineThickness, length2*scale));
+		secondLine.setOrigin(lineThickness / 2., 0);
+		secondLine.setFillColor(sf::Color::Black);
+
+		
+		std::stringstream mousePos;
+		mousePos << sf::Mouse::getPosition(window).x << " " << sf::Mouse::getPosition(window).y;
+		test->setText(mousePos.str());
 		deltaTime = timeScale * timer.restart().asSeconds();
 		sf::Event event;
 		while (window.pollEvent(event))
@@ -68,6 +109,7 @@ int main()
 				default:
 					break;
 			}
+			gui.handleEvent(event);
 		}
 		// from myphsicslab
 		double top1 = -g *(2*mass1 + mass2)* sin(angle1) - mass2*g*sin(angle1 - 2*angle2)
@@ -104,6 +146,7 @@ int main()
 		window.draw(secondLine);
 		window.draw(weight1);
 		window.draw(weight2);
+		gui.draw();
 		window.display();
 	}
 }
