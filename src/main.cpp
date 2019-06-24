@@ -9,7 +9,7 @@
 
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(500, 500), "Double pendulum");
+	sf::RenderWindow window(sf::VideoMode(500, 500), "SFML Double pendulum");
 	tgui::Gui gui(window);
 	tgui::TextBox::Ptr test = tgui::TextBox::create();
 	test->setPosition(0, 0);
