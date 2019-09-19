@@ -50,11 +50,13 @@ int main()
 	lengthSlider1->setPosition(270, 400);
 	lengthSlider1->setSize(180, 15);
 	lengthSlider1->setStep(0.0005);
+	lengthSlider1->setValue(length1);
 	gui.add(lengthSlider1);
 	tgui::Slider::Ptr lengthSlider2	= tgui::Slider::create(minLenght, maxLenght);
 	lengthSlider2->setPosition(270, 450);
 	lengthSlider2->setSize(180, 15);
 	lengthSlider2->setStep(0.0005);
+	lengthSlider2->setValue(length2);
 	gui.add(lengthSlider2);
 
 	
