@@ -9,7 +9,7 @@
 
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(500, 500), "SFML Double pendulum");
+	sf::RenderWindow window(sf::VideoMode(500, 600), "SFML Double pendulum");
 	tgui::Gui gui(window);
 	tgui::TextBox::Ptr test = tgui::TextBox::create();
 	test->setPosition(0, 0);
@@ -23,7 +23,7 @@ int main()
 	double angle2_acc = 0;
 	double angle1_vel = 0;
 	double angle2_vel = 0;
-	double length1 = 0.15;
+	double length1 = 0.1;
 	double length2 = 0.1;
 	double maxMass = 1;
 	double mass1 = 1;
@@ -34,26 +34,41 @@ int main()
 	double maxLenght = 0.2;
 	double minLenght = 0.02;
 	float lineThickness = 5;
+	sf::Vector2u windowSize = window.getSize();
 	
+	sf::Font font;
+	if(!font.loadFromFile("resources/Mermaid1001.ttf")){
+		std::cout << "Could not load font" << std::endl;
+	}
+	sf::Text massText;
+	massText.setFont(font);
+	massText.setString("Mass");
+	massText.setPosition(50, windowSize.y - 150);
+	massText.setFillColor(sf::Color::Black);
 	tgui::Slider::Ptr massSlider1 = tgui::Slider::create(0.1f, maxMass);
-	massSlider1->setPosition(50, 400);
+	massSlider1->setPosition(50, windowSize.y - 100);
 	massSlider1->setSize(180, 15);
 	massSlider1->setStep(0.005);
 	gui.add(massSlider1);
 	tgui::Slider::Ptr massSlider2 = tgui::Slider::create(0.01f, maxMass);
-	massSlider2->setPosition(50, 450);
+	massSlider2->setPosition(50, windowSize.y - 50);
 	massSlider2->setSize(180, 15);
 	massSlider2->setStep(0.005);
 	gui.add(massSlider2);
 	
+	sf::Text lengthText;
+	lengthText.setFont(font);
+	lengthText.setString("Length");
+	lengthText.setPosition(270, windowSize.y - 150);
+	lengthText.setFillColor(sf::Color::Black);
 	tgui::Slider::Ptr lengthSlider1 = tgui::Slider::create(minLenght, maxLenght);
-	lengthSlider1->setPosition(270, 400);
+	lengthSlider1->setPosition(270, windowSize.y - 100);
 	lengthSlider1->setSize(180, 15);
 	lengthSlider1->setStep(0.0005);
 	lengthSlider1->setValue(length1);
 	gui.add(lengthSlider1);
 	tgui::Slider::Ptr lengthSlider2	= tgui::Slider::create(minLenght, maxLenght);
-	lengthSlider2->setPosition(270, 450);
+	lengthSlider2->setPosition(270, windowSize.y - 50);
 	lengthSlider2->setSize(180, 15);
 	lengthSlider2->setStep(0.0005);
 	lengthSlider2->setValue(length2);
@@ -148,6 +163,8 @@ int main()
 		window.draw(secondLine);
 		window.draw(weight1);
 		window.draw(weight2);
+		window.draw(massText);
+		window.draw(lengthText);
 		gui.draw();
 		window.display();
 	}
