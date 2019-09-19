@@ -11,10 +11,10 @@ int main()
 {
 	sf::RenderWindow window(sf::VideoMode(500, 600), "SFML Double pendulum");
 	tgui::Gui gui(window);
-	tgui::TextBox::Ptr test = tgui::TextBox::create();
-	test->setPosition(0, 0);
-	test->setSize(100, 50);
-	gui.add(test);
+	// tgui::TextBox::Ptr test = tgui::TextBox::create();
+	// test->setPosition(0, 0);
+	// test->setSize(100, 50);
+	// gui.add(test);
 	
 
 	double angle1 = 90.f;
@@ -74,6 +74,27 @@ int main()
 	lengthSlider2->setValue(length2);
 	gui.add(lengthSlider2);
 
+	// sf::Texture pause_tex;
+	// if(!pause_tex.loadFromFile("resources/icon_pause.png")){
+		// std::cout << "Pause icon could not be found" << std::endl;
+	// }
+
+	tgui::Texture pause_tex("resources/icon_pause.png");
+	tgui::Picture::Ptr pause_img = tgui::Picture::create(pause_tex);
+	pause_img->setPosition(20, 20);
+	pause_img->connect("clicked", signalHandler);
+	pause_img->connect("MouseEntered", [window](){});
+	// pause_img->connect("MouseLeft", shadeButton);
+
+	// tgui::Button::Ptr pause_button = tgui::Button::create();
+	// pause_button->setPosition(20, 20);
+	// pause_button->setSize(pause_img->getSize());
+
+	// gui.add(pause_button);
+	gui.add(pause_img);
+	// sf::Sprite pause_sprite;
+	// pause_sprite.setTexture(pause_tex);
+	// pause_sprite.setPosition(20, 20);
 	
 	sf::Vector2f startPos(250, 100);
 	
@@ -112,9 +133,9 @@ int main()
 		secondLine.setFillColor(sf::Color::Black);
 
 		
-		std::stringstream mousePos;
-		mousePos << sf::Mouse::getPosition(window).x << " " << sf::Mouse::getPosition(window).y;
-		test->setText(mousePos.str());
+		// std::stringstream mousePos;
+		// mousePos << sf::Mouse::getPosition(window).x << " " << sf::Mouse::getPosition(window).y;
+		// test->setText(mousePos.str());
 		deltaTime = timeScale * timer.restart().asSeconds();
 		sf::Event event;
 		while (window.pollEvent(event))
