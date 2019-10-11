@@ -23,7 +23,7 @@ add_executable(pendulum ${sources} ${data})
 file(COPY ${data} DESTINATION resources)
 
 #armadillo library
-find_package(Armadillo REQUIRED)
+find_package(Armadillo)
 
 #include the necessary libraries
 find_package(SFML 2 REQUIRED system window graphics)
@@ -38,7 +38,7 @@ if(NOT TGUI_FOUND)
 endif()
 
 if(NOT ARMADILLO_FOUND)
-	message(FATAL_ERROR "Could not find armadillo")
+	message(WARNING "Could not find armadillo")
 endif()
 
 include_directories(${SFML_INCLUDE_DIR})
