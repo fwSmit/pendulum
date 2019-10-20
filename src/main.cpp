@@ -44,12 +44,19 @@ int main()
 	auto horLayout1 = tgui::HorizontalLayout::create();
 	horLayout1->setSize("90%", 50);
 	horLayout1->setPosition("5%", "&.height - 100");
-	gui.add(horLayout1);
+	// gui.add(horLayout1);
 	
 	auto horLayout2 = tgui::HorizontalLayout::create();
 	horLayout2->setSize("90%", 50);
 	horLayout2->setPosition("5%", "&.height - 200");
-	gui.add(horLayout2);
+	// gui.add(horLayout2);
+	
+	auto vertLayout = tgui::VerticalLayout::create();
+	vertLayout->setSize("90%", 200);
+	vertLayout->setPosition("5%", "&.height - 200");
+	vertLayout->add(horLayout1);
+	vertLayout->add(horLayout2);
+	gui.add(vertLayout);
 	
 	sf::Text massText;
 	massText.setFont(font);
