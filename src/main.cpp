@@ -86,13 +86,11 @@ int main()
 	// massSlider1->setPosition({"10%", "80%"});
 	// massSlider1->setSize("20%", 15);
 	massSlider1->setStep(0.005);
-	horLayout1->add(massSlider1);
 	// gui.add(massSlider1);
 	tgui::Slider::Ptr massSlider2 = tgui::Slider::create(0.01f, maxMass);
 	// massSlider2->setPosition({"10%", "85%"});
 	// massSlider2->setSize("20%", 15);
 	massSlider2->setStep(0.005);
-	horLayout1->add(massSlider2);
 	// gui.add(massSlider2);
 	
 	// sf::Text lengthText;
@@ -105,16 +103,18 @@ int main()
 	lengthSlider1->setSize(180, 15);
 	lengthSlider1->setStep(0.0005);
 	lengthSlider1->setValue(length1);
-	horLayout2->add(lengthSlider1);
 	// gui.add(lengthSlider1);
 	tgui::Slider::Ptr lengthSlider2	= tgui::Slider::create(minLenght, maxLenght);
 	lengthSlider2->setPosition(270, windowSize.y - 50);
 	lengthSlider2->setSize(180, 15);
 	lengthSlider2->setStep(0.0005);
 	lengthSlider2->setValue(length2);
-	horLayout2->add(lengthSlider2);
 	// gui.add(lengthSlider2);
 
+	horLayout1->add(massSlider1);
+	horLayout1->add(lengthSlider1);
+	horLayout2->add(massSlider2);
+	horLayout2->add(lengthSlider2);
 	// sf::Texture pause_tex;
 	// if(!pause_tex.loadFromFile("resources/icon_pause.png")){
 		// std::cout << "Pause icon could not be found" << std::endl;
