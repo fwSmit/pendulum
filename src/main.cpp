@@ -58,11 +58,30 @@ int main()
 	vertLayout->add(horLayout2);
 	gui.add(vertLayout);
 	
-	sf::Text massText;
-	massText.setFont(font);
-	massText.setString("Mass");
-	massText.setPosition(50, windowSize.y - 150);
-	massText.setFillColor(sf::Color::Black);
+	// sf::Text massText;
+	// massText.setFont(font);
+	// massText.setString("Mass");
+	// massText.setPosition(50, windowSize.y - 150);
+	// massText.setFillColor(sf::Color::Black);
+	// tgui::Font tguiFont(font);
+	// tgui::Text::Ptr massText;
+	// massText->setFont(tguiFont);
+	// massText->setString("test");
+	// gui.add(massText);
+	
+	auto massLabel = tgui::Label::create();
+	massLabel->setText("Mass");
+	massLabel->setTextSize(35);
+	massLabel->setPosition("19%", "&.height - 250");
+	gui.add(massLabel);
+	
+	auto sizeLabel = tgui::Label::create();
+	sizeLabel->setText("Size");
+	sizeLabel->setTextSize(35);
+	sizeLabel->setPosition("65%", "&.height - 250");
+	gui.add(sizeLabel);
+
+	// horLayout1->add(massText);
 	auto massSlider1 = tgui::Slider::create(0.1f, maxMass);
 	// massSlider1->setPosition({"10%", "80%"});
 	// massSlider1->setSize("20%", 15);
@@ -76,11 +95,11 @@ int main()
 	horLayout1->add(massSlider2);
 	// gui.add(massSlider2);
 	
-	sf::Text lengthText;
-	lengthText.setFont(font);
-	lengthText.setString("Length");
-	lengthText.setPosition(270, windowSize.y - 150);
-	lengthText.setFillColor(sf::Color::Black);
+	// sf::Text lengthText;
+	// lengthText.setFont(font);
+	// lengthText.setString("Length");
+	// lengthText.setPosition(270, windowSize.y - 150);
+	// lengthText.setFillColor(sf::Color::Black);
 	tgui::Slider::Ptr lengthSlider1 = tgui::Slider::create(minLenght, maxLenght);
 	lengthSlider1->setPosition(270, windowSize.y - 100);
 	lengthSlider1->setSize(180, 15);
