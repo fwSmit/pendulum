@@ -15,9 +15,9 @@ int main()
 	// test->setPosition(0, 0);
 	// test->setSize(100, 50);
 	// gui.add(test);
-	
 
-	double angle1 = 90.f;
+
+	double angle1 = 35.f;
 	double angle2 = 45.f;
 	double angle1_acc = 0;
 	double angle2_acc = 0;
@@ -35,11 +35,19 @@ int main()
 	double minLenght = 0.02;
 	float lineThickness = 5;
 	sf::Vector2u windowSize = window.getSize();
+
 	
 	sf::Font font;
 	if(!font.loadFromFile("resources/Mermaid1001.ttf")){
 		std::cout << "Could not load font" << std::endl;
 	}
+	
+	auto pendulum_position = tgui::Slider::create();
+	pendulum_position->setPosition("50%", "250");
+	pendulum_position->setEnabled(0);
+	pendulum_position->setVisible(0);
+	gui.add(pendulum_position);
+	
 
 	auto horLayout1 = tgui::HorizontalLayout::create();
 	horLayout1->setSize("90%", 50);
@@ -133,6 +141,14 @@ int main()
 				std::cout << "play" << std::endl;
 			}
 			});
+	gui.add(pause_img);
+	
+	
+	// Icon made by Google from https://www.flaticon.com
+	tgui::Texture reset_tex("resources/icon_reset.png");
+	tgui::Picture::Ptr reset_img = tgui::Picture::create(reset_tex);
+	reset_img->setPosition(20, 50);
+	gui.add(reset_img);
 	// pause_img->connect("MouseEntered", [window](){});
 	// pause_img->connect("MouseLeft", shadeButton);
 
@@ -141,12 +157,10 @@ int main()
 	// pause_button->setSize(pause_img->getSize());
 
 	// gui.add(pause_button);
-	gui.add(pause_img);
 	// sf::Sprite pause_sprite;
 	// pause_sprite.setTexture(pause_tex);
 	// pause_sprite.setPosition(20, 20);
 	
-	sf::Vector2f startPos(250, 100);
 	
 
 	sf::Clock timer;
@@ -175,7 +189,7 @@ int main()
 		length2 = lengthSlider2->getValue();
 		sf::RectangleShape firstLine (sf::Vector2f(lineThickness, length1*scale));
 		firstLine.setOrigin(lineThickness / 2., 0);
-		firstLine.setPosition(startPos.x, startPos.y);
+		firstLine.setPosition(pendulum_position->getPosition().x, pendulum_position->getPosition().y);
 		firstLine.setFillColor(sf::Color::Black);
 
 		sf::RectangleShape secondLine (sf::Vector2f(lineThickness, length2*scale));
@@ -230,7 +244,7 @@ int main()
 			// sf::Vertex(secondPos)
 		// };
 		// window.draw(&line[0], line.size(), sf::LineStrip);
-		sf::Vector2f firstEndPos (startPos.x + length1 * scale * sin(angle1), startPos.y + length1 * scale * cos(angle1));
+		sf::Vector2f firstEndPos (pendulum_position->getPosition().x + length1 * scale * sin(angle1), pendulum_position->getPosition().y + length1 * scale * cos(angle1));
 		sf::Vector2f secondEndPos (firstEndPos.x + length2 * scale * sin(angle2), firstEndPos.y + length2 * scale * cos(angle2));
 		firstLine.setRotation(-angle1/M_PI*180.f);
 		secondLine.setRotation(-angle2/M_PI*180.f);
