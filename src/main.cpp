@@ -6,6 +6,7 @@
 #include <string>
 #include <SFML/Graphics.hpp>
 #include <TGUI/TGUI.hpp>
+#include <deque>
 
 struct variables{
 	double angle1 = 35.f;
@@ -17,13 +18,15 @@ struct variables{
 	double length1 = 0.1;
 	double length2 = 0.1;
 	double maxMass = 1;
-	double mass1 = 1;
+	double mass1 = 100;
 	double mass2 = 0.2;
 	double scale = 1000;
 	double timeScale = 1.0/5;
 	double maxLenght = 0.2;
 	double minLenght = 0.02;
 	float lineThickness = 5;
+	std::deque<sf::Vector2f> positions;
+	unsigned int maxPositions = 2000;
 
 	// constants
 	constexpr static double g{ 9.81 };
@@ -48,6 +51,12 @@ int main()
 	// gui.add(test);
 
 
+	sf::CircleShape trailCircle;
+	int a = 60;
+	trailCircle.setFillColor(sf::Color(a, a, a));
+	trailCircle.setRadius(3);
+	trailCircle.setOrigin(trailCircle.getRadius(), trailCircle.getRadius());
+	trailCircle.setPointCount(10);
 
 	
 	sf::Font font;
@@ -103,7 +112,7 @@ int main()
 	gui.add(sizeLabel);
 
 	// horLayout1->add(massText);
-	auto massSlider1 = tgui::Slider::create(0.1f, var.maxMass);
+	auto massSlider1 = tgui::Slider::create(.1f, var.maxMass);
 	// massSlider1->setPosition({"10%", "80%"});
 	// massSlider1->setSize("20%", 15);
 	massSlider1->setStep(0.005);
@@ -183,6 +192,8 @@ int main()
 	double deltaTime;
 	while (window.isOpen())
 	{
+
+		
 		// masses
 		var.mass1 = massSlider1->getValue();
 		var.mass2 = massSlider2->getValue();
@@ -267,6 +278,20 @@ int main()
 		secondLine.setPosition(firstEndPos.x, firstEndPos.y);
 		weight1.setPosition(firstEndPos);
 		weight2.setPosition(secondEndPos);
+
+
+		
+		// take care of the trail
+		var.positions.push_back(secondEndPos);
+		if(var.positions.size() > var.maxPositions){
+			var.positions.pop_front();
+		}
+
+		for(auto pos : var.positions){
+			trailCircle.setPosition(pos);
+			window.draw(trailCircle);
+		}
+		
 		window.draw(firstLine);
 		window.draw(secondLine);
 		window.draw(weight1);
