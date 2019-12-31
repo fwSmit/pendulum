@@ -7,16 +7,7 @@
 #include <SFML/Graphics.hpp>
 #include <TGUI/TGUI.hpp>
 
-int main()
-{
-	sf::RenderWindow window(sf::VideoMode(1000, 900), "SFML Double pendulum");
-	tgui::Gui gui(window);
-	// tgui::TextBox::Ptr test = tgui::TextBox::create();
-	// test->setPosition(0, 0);
-	// test->setSize(100, 50);
-	// gui.add(test);
-
-
+struct variables{
 	double angle1 = 35.f;
 	double angle2 = 45.f;
 	double angle1_acc = 0;
@@ -28,13 +19,35 @@ int main()
 	double maxMass = 1;
 	double mass1 = 1;
 	double mass2 = 0.2;
-	double g = 9.81;
 	double scale = 1000;
 	double timeScale = 1.0/5;
 	double maxLenght = 0.2;
 	double minLenght = 0.02;
 	float lineThickness = 5;
+
+	// constants
+	constexpr static double g{ 9.81 };
+
+};
+
+void reset(variables& _var){
+	_var = variables();
+}
+
+int main()
+{
+	variables var;
+	
+
+	sf::RenderWindow window(sf::VideoMode(1000, 900), "SFML Double pendulum");
 	sf::Vector2u windowSize = window.getSize();
+	tgui::Gui gui(window);
+	// tgui::TextBox::Ptr test = tgui::TextBox::create();
+	// test->setPosition(0, 0);
+	// test->setSize(100, 50);
+	// gui.add(test);
+
+
 
 	
 	sf::Font font;
@@ -90,12 +103,12 @@ int main()
 	gui.add(sizeLabel);
 
 	// horLayout1->add(massText);
-	auto massSlider1 = tgui::Slider::create(0.1f, maxMass);
+	auto massSlider1 = tgui::Slider::create(0.1f, var.maxMass);
 	// massSlider1->setPosition({"10%", "80%"});
 	// massSlider1->setSize("20%", 15);
 	massSlider1->setStep(0.005);
 	// gui.add(massSlider1);
-	tgui::Slider::Ptr massSlider2 = tgui::Slider::create(0.01f, maxMass);
+	tgui::Slider::Ptr massSlider2 = tgui::Slider::create(0.01f, var.maxMass);
 	// massSlider2->setPosition({"10%", "85%"});
 	// massSlider2->setSize("20%", 15);
 	massSlider2->setStep(0.005);
@@ -106,17 +119,17 @@ int main()
 	// lengthText.setString("Length");
 	// lengthText.setPosition(270, windowSize.y - 150);
 	// lengthText.setFillColor(sf::Color::Black);
-	tgui::Slider::Ptr lengthSlider1 = tgui::Slider::create(minLenght, maxLenght);
+	tgui::Slider::Ptr lengthSlider1 = tgui::Slider::create(var.minLenght, var.maxLenght);
 	lengthSlider1->setPosition(270, windowSize.y - 100);
 	lengthSlider1->setSize(180, 15);
 	lengthSlider1->setStep(0.0005);
-	lengthSlider1->setValue(length1);
+	lengthSlider1->setValue(var.length1);
 	// gui.add(lengthSlider1);
-	tgui::Slider::Ptr lengthSlider2	= tgui::Slider::create(minLenght, maxLenght);
+	tgui::Slider::Ptr lengthSlider2	= tgui::Slider::create(var.minLenght, var.maxLenght);
 	lengthSlider2->setPosition(270, windowSize.y - 50);
 	lengthSlider2->setSize(180, 15);
 	lengthSlider2->setStep(0.0005);
-	lengthSlider2->setValue(length2);
+	lengthSlider2->setValue(var.length2);
 	// gui.add(lengthSlider2);
 
 	horLayout1->add(massSlider1);
@@ -148,6 +161,9 @@ int main()
 	tgui::Texture reset_tex("resources/icon_reset.png");
 	tgui::Picture::Ptr reset_img = tgui::Picture::create(reset_tex);
 	reset_img->setPosition(20, 50);
+	reset_img->connect("clicked", [& var](){
+			reset(var);
+			});
 	gui.add(reset_img);
 	// pause_img->connect("MouseEntered", [window](){});
 	// pause_img->connect("MouseLeft", shadeButton);
@@ -168,39 +184,39 @@ int main()
 	while (window.isOpen())
 	{
 		// masses
-		mass1 = massSlider1->getValue();
-		mass2 = massSlider2->getValue();
-		double mass1Percent = mass1/maxMass;
-		double mass2Percent = mass2/maxMass;
-		sf::CircleShape weight1(std::max(10., mass1/maxMass * 15.));
+		var.mass1 = massSlider1->getValue();
+		var.mass2 = massSlider2->getValue();
+		double mass1Percent = var.mass1/var.maxMass;
+		double mass2Percent = var.mass2/var.maxMass;
+		sf::CircleShape weight1(std::max(10., var.mass1/var.maxMass * 15.));
 		sf::Color weigth1Color(100*mass1Percent, 255 * (1-mass1Percent), 255 * (1-mass1Percent));
 		weight1.setFillColor(weigth1Color);
 		weight1.setOrigin(weight1.getRadius(), weight1.getRadius());
 		weight1.setPointCount(100);
 
-		sf::CircleShape weight2(std::max(10., mass2/maxMass * 15.));
+		sf::CircleShape weight2(std::max(10., var.mass2/var.maxMass * 15.));
 		sf::Color weigth2Color(100*mass2Percent, 255 * (1-mass2Percent), 255 * (1-mass2Percent));
 		weight2.setFillColor(weigth2Color);
 		weight2.setOrigin(weight2.getRadius(), weight2.getRadius());
 		weight2.setPointCount(100);
 
 		//lenghts
-		length1 = lengthSlider1->getValue();
-		length2 = lengthSlider2->getValue();
-		sf::RectangleShape firstLine (sf::Vector2f(lineThickness, length1*scale));
-		firstLine.setOrigin(lineThickness / 2., 0);
+		var.length1 = lengthSlider1->getValue();
+		var.length2 = lengthSlider2->getValue();
+		sf::RectangleShape firstLine (sf::Vector2f(var.lineThickness, var.length1*var.scale));
+		firstLine.setOrigin(var.lineThickness / 2., 0);
 		firstLine.setPosition(pendulum_position->getPosition().x, pendulum_position->getPosition().y);
 		firstLine.setFillColor(sf::Color::Black);
 
-		sf::RectangleShape secondLine (sf::Vector2f(lineThickness, length2*scale));
-		secondLine.setOrigin(lineThickness / 2., 0);
+		sf::RectangleShape secondLine (sf::Vector2f(var.lineThickness, var.length2*var.scale));
+		secondLine.setOrigin(var.lineThickness / 2., 0);
 		secondLine.setFillColor(sf::Color::Black);
 
 		
 		// std::stringstream mousePos;
 		// mousePos << sf::Mouse::getPosition(window).x << " " << sf::Mouse::getPosition(window).y;
 		// test->setText(mousePos.str());
-		deltaTime = timeScale * timer.restart().asSeconds();
+		deltaTime = var.timeScale * timer.restart().asSeconds();
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
@@ -220,17 +236,17 @@ int main()
 		}
 		if(!paused){
 			// from myphsicslab
-			double top1 = -g *(2*mass1 + mass2)* sin(angle1) - mass2*g*sin(angle1 - 2*angle2)
-				- 2 * sin(angle1-angle2)*mass2*(angle2_vel*angle2_vel*length2 + angle1_vel*angle1_vel*length1*cos(angle1-angle2));
-			double top2 = 2*sin(angle1-angle2)*( (angle1_vel*angle1_vel*length1*(mass1+mass2))
-					+ g*(mass1+mass2)*cos(angle1) + angle2_vel*angle2_vel*length2*mass2*cos(angle1-angle2) );
-			double bottomPart = (2*mass1 + mass2 - mass2*cos(2*(angle1 - angle2)));
-			angle1_acc = top1 / (length1 * bottomPart);
-			angle2_acc = top2 / (length2 * bottomPart);
-			angle1 += deltaTime * angle1_vel;
-			angle2 += deltaTime * angle2_vel;
-			angle1_vel = angle1_vel + deltaTime * angle1_acc;
-			angle2_vel = angle2_vel + deltaTime * angle2_acc;
+			double top1 = -var.g *(2*var.mass1 + var.mass2)* sin(var.angle1) - var.mass2*var.g*sin(var.angle1 - 2*var.angle2)
+				- 2 * sin(var.angle1-var.angle2)*var.mass2*(var.angle2_vel*var.angle2_vel*var.length2 + var.angle1_vel*var.angle1_vel*var.length1*cos(var.angle1-var.angle2));
+			double top2 = 2*sin(var.angle1-var.angle2)*( (var.angle1_vel*var.angle1_vel*var.length1*(var.mass1+var.mass2))
+					+ var.g*(var.mass1+var.mass2)*cos(var.angle1) + var.angle2_vel*var.angle2_vel*var.length2*var.mass2*cos(var.angle1-var.angle2) );
+			double bottomPart = (2*var.mass1 + var.mass2 - var.mass2*cos(2*(var.angle1 - var.angle2)));
+			var.angle1_acc = top1 / (var.length1 * bottomPart);
+			var.angle2_acc = top2 / (var.length2 * bottomPart);
+			var.angle1 += deltaTime * var.angle1_vel;
+			var.angle2 += deltaTime * var.angle2_vel;
+			var.angle1_vel = var.angle1_vel + deltaTime * var.angle1_acc;
+			var.angle2_vel = var.angle2_vel + deltaTime * var.angle2_acc;
 		}
 		//angle1 = 0;
 		//angle2 = 45.0 / 180.0 * 3.14;
@@ -244,10 +260,10 @@ int main()
 			// sf::Vertex(secondPos)
 		// };
 		// window.draw(&line[0], line.size(), sf::LineStrip);
-		sf::Vector2f firstEndPos (pendulum_position->getPosition().x + length1 * scale * sin(angle1), pendulum_position->getPosition().y + length1 * scale * cos(angle1));
-		sf::Vector2f secondEndPos (firstEndPos.x + length2 * scale * sin(angle2), firstEndPos.y + length2 * scale * cos(angle2));
-		firstLine.setRotation(-angle1/M_PI*180.f);
-		secondLine.setRotation(-angle2/M_PI*180.f);
+		sf::Vector2f firstEndPos (pendulum_position->getPosition().x + var.length1 * var.scale * sin(var.angle1), pendulum_position->getPosition().y + var.length1 * var.scale * cos(var.angle1));
+		sf::Vector2f secondEndPos (firstEndPos.x + var.length2 * var.scale * sin(var.angle2), firstEndPos.y + var.length2 * var.scale * cos(var.angle2));
+		firstLine.setRotation(-var.angle1/M_PI*180.f);
+		secondLine.setRotation(-var.angle2/M_PI*180.f);
 		secondLine.setPosition(firstEndPos.x, firstEndPos.y);
 		weight1.setPosition(firstEndPos);
 		weight2.setPosition(secondEndPos);
