@@ -26,7 +26,7 @@ struct variables{
 	double minLenght = 0.02;
 	float lineThickness = 5;
 	std::deque<sf::Vector2f> positions;
-	unsigned int maxPositions = 2000;
+	unsigned int maxPositions = 20;
 
 	// constants
 	constexpr static double g{ 9.81 };
@@ -281,15 +281,21 @@ int main()
 
 
 		
+		static unsigned int count = 0;
 		// take care of the trail
-		var.positions.push_back(secondEndPos);
+		if(count == 300)
+		{
+			var.positions.push_back(secondEndPos);
+			count = 0;
+		}
+		count++;
 		if(var.positions.size() > var.maxPositions){
 			var.positions.pop_front();
 		}
 
 		for(auto pos : var.positions){
-			trailCircle.setPosition(pos);
-			window.draw(trailCircle);
+				trailCircle.setPosition(pos);
+				window.draw(trailCircle);
 		}
 		
 		window.draw(firstLine);
